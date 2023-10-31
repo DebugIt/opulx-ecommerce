@@ -1,8 +1,9 @@
 const express = require("express");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const isAdmin = require("../middlewares/isAdmin");
+const isEither = require("../middlewares/isEither");
 const categoryRouter = express.Router()
-const { create, update, getAll, getindividual, deletecategory } = require("../controllers/categoryController")
+const { create, update, getAll, getindividual, deletecategory, fetchcategoryproducts } = require("../controllers/categoryController")
 
 
 categoryRouter.post("/create-category",isAdmin, async(req, res) => {
@@ -98,6 +99,27 @@ categoryRouter.delete("/delete-category/:id", isAdmin, async(req, res) => {
             status,
             success,
             message
+        })
+    }
+    else{
+        return res.status(status).json({
+            status,
+            success,
+            message
+        })
+    }
+})
+
+categoryRouter.get("/fetch-category-products/:slug", async(req, res) => {
+    const slug = req.params.slug
+    const response = await fetchcategoryproducts(slug);
+    const { success, status, message, products } = response;
+    if(status === 200){
+        return res.status(status).json({
+            status,
+            success,
+            message,
+            products
         })
     }
     else{

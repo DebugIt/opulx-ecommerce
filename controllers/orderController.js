@@ -1,5 +1,13 @@
 const Order = require("../models/Order")
 const Users = require("../models/User")
+const dotenv = require("dotenv").config()
+const crypto = require("crypto")
+
+
+// razorpay
+const Razorpay = require("razorpay");
+let instance = new Razorpay({ key_id: process.env.RAZORPAY_API_KEY, key_secret: process.env.RAZORPAY_SECRET })
+
 
 module.exports = {
     create: async (data) => {
@@ -39,6 +47,79 @@ module.exports = {
         }
     },
 
+    create_razorpay_order: async (amount) => {
+        console.log(process.env.RAZORPAY_API_KEY, process.env.RAZORPAY_SECRET)
+        try {
+            var options = {
+                amount: amount * 100,
+                currency: "INR"
+            };
+            
+
+            const order = await instance.orders.create(options)
+            if(order){
+                return {
+                    status: 201,
+                    success: true,
+                    message: "Payment Gateway Order Generated Successfully",
+                    razorpay_order_id: order.id,
+                    data: order
+                }
+            }else{
+                return {
+                    status: 500,
+                    success: false,
+                    message: "Failed to generate Payment Gateway Order",
+                    razorpay_order_id: null,
+                    data: null
+                }
+            }
+
+
+        } catch (error) {
+            console.log(error)
+            return {
+                status: 500,
+                sucess: false,
+                message: error.message || 'Internal Server Error'
+            }
+        }
+    },
+
+    verify_razorpay_order: async (rzp_order_id, rzp_pmnt_id, rzp_sign) => {
+        try {
+            let body = rzp_order_id + "|" + rzp_pmnt_id
+
+            var expectedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_SECRET).update(body.toString()).digest('hex')
+            // var response = { "signatureIsValid": "false" }
+            if(expectedSignature === rzp_sign){
+                // response = { "signatureIsValid": "true" }
+                return {
+                    status: 200,
+                    success: true,
+                    message: "Order Verification Successful",
+                }
+            }
+            else{
+                return {
+                    status: 500,
+                    success: false,
+                    message: "Order Verification Failed",
+                }
+            }
+
+            
+        } catch (error) {
+            console.log(error)
+            return {
+                status: 500,
+                sucess: false,
+                message: error.message || 'Internal Server Error'
+            }
+        }
+    },
+
+
     fetchindividualorder: async (id) => {
         try {
             const findUser = await Users.findById(id);
@@ -49,7 +130,7 @@ module.exports = {
                     message:"No User Found"
                 }
             }else{
-                const fetchOrders = await Order.find({user:id})
+                const fetchOrders = await Order.find({user:id}).populate('user')
                 if(fetchOrders){
                     return {
                         status: 200,
@@ -237,6 +318,35 @@ module.exports = {
                 sucess: false,
                 message: error.message || 'Internal Server Error'
             }         
+        }
+    },
+
+    getParticularOrder: async (id) => {
+        try {
+            const findOrder = await Order.findById(id)
+            if(findOrder){
+                return {
+                    success: true,
+                    status: 200,
+                    message: "Order Fetched",
+                    order: findOrder
+                }
+            }
+            else{
+                return {
+                    success: false,
+                    status: 404,
+                    message: "No such Order found",
+                    order: null
+                }
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                status: 500,
+                sucess: false,
+                message: error.message || 'Internal Server Error'
+            }
         }
     }
 }

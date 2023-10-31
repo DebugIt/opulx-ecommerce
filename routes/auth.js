@@ -1,7 +1,9 @@
 const express = require("express");
 const userRouter = express.Router();
+const isEither = require("../middlewares/isEither")
+const isAuthenticated = require("../middlewares/isAuthenticated")
 // imports
-const { register, login } = require("../controllers/authController");
+const { register, login, getuser } = require("../controllers/authController");
 
 // routes
 // REGISTER
@@ -38,13 +40,14 @@ userRouter.post("/register", async(req, res) => {
 userRouter.post("/login", async(req, res) => {
     const reqBody = req.body
     const response = await login(reqBody);
-    const { success, status, message, token, error } = response;
+    const { success, status, message, token, error, id } = response;
     if(status === 200){
         return res.status(status).json({
             success,
             status,
             message,
-            token
+            token,
+            id
         })
     }
     else if(status === 403){
@@ -73,6 +76,21 @@ userRouter.post("/login", async(req, res) => {
         })
     }
 })
+
+// FEtch user
+userRouter.get('/fetchuser/:id', isAuthenticated, async (req,res) => {
+    let id = req.params.id;
+    const response = await getuser(id);
+    const {success, status, message, user} = response;
+
+    return res.status(status).json({
+        success,
+        status,
+        message,
+        user
+    })
+})
+
 
 
 module.exports = userRouter

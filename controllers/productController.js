@@ -91,7 +91,7 @@ module.exports = {
 
     allproducts: async () => {
         try {
-            const products = await Product.find().populate('category').select("-photo");
+            const products = await Product.find().populate('category');
             if(products){
                 return {
                     status: 200,
@@ -116,10 +116,43 @@ module.exports = {
         }
     },
 
+    // fetch for home in paginations
+    limitedfetch: async(nop) => {
+        try {
+            const perPage = parseInt(nop);
+            
+            const products = await Product
+              .find()
+              .populate('category')
+            //   .select("-photo") -- to not get the photo if the products
+              .limit(perPage); // Limit the number of products to fetch and send
+            
+            if (products.length > 0) {
+              return {
+                status: 200,
+                success: true,
+                message: "Products Fetched",
+                data: products
+              }
+            } else {
+              return {
+                status: 400,
+                success: false,
+                message: "No Products Found"
+              };
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            return res.status(500).json({
+              success: false,
+              message: error.message || "Internal Server Error"
+            });
+          }
+    },
 
     getProductBySlug: async (slug) => {
         try {
-            const findProduct = await Product.findOne({slug}).populate('category').select("-photo");
+            const findProduct = await Product.findOne({slug}).populate('category');
             if(findProduct){
                 return {
                     status: 200,

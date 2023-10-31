@@ -1,7 +1,7 @@
 const express = require("express");
 const isAdmin = require("../middlewares/isAdmin");
 const productRouter = express.Router()
-const { createproduct, uploadimage, allproducts, getProductBySlug, getproductphoto, deleteproduct, updateproduct } = require("../controllers/productController");
+const { createproduct, uploadimage, allproducts, getProductBySlug, getproductphoto, deleteproduct, updateproduct, limitedfetch } = require("../controllers/productController");
 const isEither = require("../middlewares/isEither");
 
 
@@ -64,6 +64,28 @@ productRouter.get("/all-products", async (req, res) => {
         })
     }
 })
+
+productRouter.get("/limited-products/:limit", async (req, res) => {
+    let limit = req.params.limit
+    const response = await limitedfetch(limit);
+    const { success, status, message, data } = response;
+    if(status === 200){
+        return res.status(status).json({
+            status,
+            success,
+            message,
+            data
+        })
+    }
+    else{
+        return res.status(status).json({
+            status,
+            success,
+            message
+        })
+    }
+});
+  
 
 productRouter.get("/get-product/:slug" ,async (req, res) => {
     const slug = req.params.slug;

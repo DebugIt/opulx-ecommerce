@@ -1,4 +1,5 @@
 const Category = require("../models/Category")
+const Product = require("../models/Product")
 const slugify = require("slugify");
 module.exports = {
     create: async (name) => {
@@ -127,6 +128,44 @@ module.exports = {
                     status: 404,
                     success: false,
                     message: 'No category found with this id'
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            return {
+                status: 500,
+                success: false,
+                message: error.message || "Internal Server Error",
+            };
+        }
+    },
+
+    fetchcategoryproducts: async (slug) => {
+        try {
+            const findIndividualCategory = await Category.findOne({slug});
+            if(findIndividualCategory){
+                const lookForProducts = await Product.find({category:findIndividualCategory._id})
+                if(lookForProducts){
+                    return {
+                        status: 200,
+                        success: true,
+                        message: "Products for the matching category found!",
+                        products: lookForProducts
+                    }
+                }else{
+                    return {
+                        status: 404,
+                        success: false,
+                        message: "No product found in this category",
+                        products: null
+                    }
+                }
+            } 
+            else{
+                return {
+                    status: 404,
+                    success: false,
+                    message: "No such category exists"
                 }
             }
         } catch (error) {

@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken")
 // importing models
 const User = require('../models/User');
 const Admin = require("../models/Admin");
+const Users = require("../models/User");
 
 
 module.exports = {
@@ -84,7 +85,8 @@ module.exports = {
                 success: true,
                 status: 200,
                 message: "Logged In Successfully!",
-                token
+                token,
+                id: IfExists._id
             }
 
         } catch (error) {
@@ -94,6 +96,35 @@ module.exports = {
                 message: "Error Logging in!",
                 token: null,
                 error: error
+            }
+        }
+    },
+
+    getuser: async (id) => {
+        try {
+            const fetchUser = await Users.findById(id)
+            if(fetchUser){
+                return {
+                    success: true,
+                    status: 200,
+                    message: "User fetched",
+                    user: fetchUser
+                }
+            }else{
+                return {
+                    success: false,
+                    status: 404,
+                    message: "No Such User Found!",
+                    user: null
+                }
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                success: false,
+                status: 500,
+                message: "Internal Server Error",
+                user: null
             }
         }
     },
