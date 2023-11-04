@@ -25,26 +25,54 @@ productRouter.post("/create-product", isAdmin, async(req, res) => {
     }    
 })
 
-productRouter.post("/uploadimg", isAdmin, async(req, res) => {
-    console.log(req.files.photo)
-    const response = await uploadimage(req.files.photo)
-    const { success, status, message, image_url} = response
-    if(status === 200){
-        return res.status(status).json({
-            success,
-            status,
-            message,
-            image_url
-        })
+// productRouter.post("/uploadimg", isAdmin, async(req, res) => {
+//     console.log(req.files.photo)
+//     const response = await uploadimage(req.files.photo)
+//     const { success, status, message, image_url} = response
+//     if(status === 200){
+//         return res.status(status).json({
+//             success,
+//             status,
+//             message,
+//             image_url
+//         })
+//     }
+//     else{
+//         return res.status(status).json({
+//             success,
+//             status,
+//             message
+//         })
+//     }
+// })
+
+productRouter.post("/uploadimg", isAdmin, async (req, res) => {
+    if (!req.files || !req.files.photo || !req.files.photo.tempFilePath) {
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: "Invalid image upload request",
+      });
     }
-    else{
-        return res.status(status).json({
-            success,
-            status,
-            message
-        })
+  
+    const response = await uploadimage(req.files.photo);
+  
+    const { success, status, message, image_url } = response;
+    if (status === 200) {
+      return res.status(status).json({
+        success,
+        status,
+        message,
+        image_url,
+      });
+    } else {
+      return res.status(status).json({
+        success,
+        status,
+        message,
+      });
     }
-})
+  });
 
 productRouter.get("/all-products", async (req, res) => {
     const response = await allproducts();

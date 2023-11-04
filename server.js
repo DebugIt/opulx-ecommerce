@@ -16,12 +16,21 @@ const fileUpload = require("express-fileupload");
 
 // use
 // file upload .use()
+// app.use(
+//     fileUpload({
+//         useTempFiles: true,
+//         tempFileDir: "/tmp/",
+//     })
+// )
+
 app.use(
     fileUpload({
-        useTempFiles: true,
-        tempFileDir: "/tmp/",
+      useTempFiles: true,
+      tempFileDir: "/tmp/",
     })
-)
+  );
+  
+
 // commons
 app.use(cors());
 app.use(express.json());

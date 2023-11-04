@@ -159,7 +159,7 @@ module.exports = {
 
     getall: async () => {
         try {
-            const getAllOrders = await Order.find();
+            const getAllOrders = await Order.find().populate('user');
             if(getAllOrders){
                 return {
                     status: 200,
