@@ -3,15 +3,40 @@ import OpulxContext from '../context/OpulxContext'
 
 import { MdPayment } from "react-icons/md"
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const Createorder = () => {
     const API_URL = process.env.REACT_APP_BASE_URL
     const RZP_KEY = process.env.REACT_APP_RAZORPAY_API_KEY
+    const { orderProductDetails, setorderProductDetails, cart, setCart, removeFromCart } = useContext(OpulxContext)
+    const navigate = useNavigate()
 
-    const { orderProductDetails, setorderProductDetails, cart, setCart } = useContext(OpulxContext)
+    // CART
+    let total;
+
+    const [cartValue, setCartValue] = useState(0)
+    const [orderid, setOrderId] = useState()
+    
+
+    const calculateTotal = () => {
+        total = 0
+        cart.map((item) => (
+        total = ((item.price * item.quantity) + total)
+        ))
+        setCartValue(total)
+    }
+    
+    useEffect(() => {
+        console.log(cart)
+        calculateTotal()
+        console.log(total)
+    }, [cart])
+
+
     const uid = localStorage.getItem("userid-opulx")
     const utoken = localStorage.getItem("usertoken-opulx")
     const [user, setUser] = useState(uid)
+    const [controlOrderRoute, setControlOrderRouter] = useState(true)
     const [address, setAddress] = useState({
         name: '',
         email: '',
@@ -25,10 +50,10 @@ const Createorder = () => {
     }
 
     const handleSubmit = async(e) => {
+        console.log(utoken)
         e.preventDefault()
-        //FIXME: get products 
-        
         try {
+            
             const data = {
                 user: uid,
                 products: cart,
@@ -36,13 +61,16 @@ const Createorder = () => {
             }
             const response = await axios.post(`${API_URL}/api/order/create-order`, data, {
                 headers: {
-                    token: utoken
+                    "token": utoken
                 }
             })
             console.log(response)
             handleCheckout(response.data?.order_details?.totalPrice)
+            localStorage.setItem("orderid", response.data?.order_details?._id)
             localStorage.setItem("opulx-checkout", JSON.stringify([]))
             localStorage.setItem("userCart-opulx", JSON.stringify([]))
+            
+            
         } catch (error) {
             console.log(error)
         }
@@ -64,7 +92,22 @@ const Createorder = () => {
                     razorpay_signature: response.razorpay_signature 
                 }
                 axios.post(`${API_URL}/api/order/verify-razor-order`, data).then((res) => {
-                    console.log(res)
+                    console.log("payment response: ",res)
+                    const oid = localStorage.getItem("orderid")
+                    const paidstatus = "Paid"
+                    const tid = response.razorpay_payment_id
+                    const data = {
+                        paidstatus, 
+                        tid
+                    }
+                    axios.post(`${API_URL}/api/order/updatepayment/${oid}`, data, {
+                        headers: {
+                            token: utoken
+                        }
+                    }).then((res) => console.log(res)).catch(err => console.log(err))
+                    console.log(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature)
+                    
+                    
                 }).catch((err) => console.log(err))
             },
             "theme": {
@@ -108,31 +151,59 @@ const Createorder = () => {
 
   return (
     <>
-        <div id="checkout" style={{ fontFamily: 'Montserrat' }} className='m-4 grid place-items-center'>
-            <h1>Check Out • Add Details</h1>
-            <form onSubmit={handleSubmit}>
-                <div id="form-container" className=''>
-                    {/* <div id="user">
-                        <input className='border my-1 p-1 w-full' value={user} disabled placeholder='User' required type="text" />
-                    </div> */}
-                    <div>
-                        <input className='border my-1 p-1 w-full' placeholder="Enter Reciever's name" required type="text" name="name" value={address.name} onChange={handleInputChange} />
-                    </div>
-                    <div>
-                        <input className='border my-1 p-1 w-full' placeholder='Enter email' required type="email" name="email" value={address.email} onChange={handleInputChange} />
-                    </div>
-                    <div>
-                        <input className='border my-1 p-1 w-full' placeholder='Enter Phone no.' required type="number" name="phone" value={address.phone} onChange={handleInputChange} />
-                    </div>
-                    <div>
-                        <textarea className='border my-1 p-1 w-full' placeholder='Address Line 1' required type="text" name="line1" value={address.line1} onChange={handleInputChange} />
-                    </div>
-                    <div>
-                        <input className='border my-1 p-1 w-full' placeholder='Enter pincode' required type="number" name="pincode" value={address.pincode} onChange={handleInputChange} />
-                    </div>
+        <div id="home" className='flex'>
+            <div style={{ fontFamily: 'Montserrat' }} className='w-[50%]  m-4 flex flex-col justify-center'>
+            {
+                (cart.length === 0) ? (
+                <div id="cart-container" className='m-2' style={{fontFamily: 'Montserrat'}}>
+                    <h1>Your Shopping Cart is Empty :: Try adding products to cart</h1>
                 </div>
-                <button type="submit" className='bg-[#f9f6e5] py-2 px-3 w-full flex justify-center' >Proceed to Pay <MdPayment className='pt-1' size={20}/></button>
-            </form>
+                ) : (
+                <div>
+                    <div id="cart-container" className='m-2 text-sm grid grid-cols-2 md:grid-cols-3' style={{fontFamily: 'Montserrat'}}>
+                    {
+                        cart.map((item) => (
+                        <div key={item.name} className='product p-2 shadow-md'>
+                            <div id="imagepreview">
+                            <img src={item.imageURLs} alt={item.name} />
+                            </div>
+                            <h2><span className='font-semibold'>Product:</span> {item.name}</h2>
+                            <h3><span className='font-semibold'>Price x Quantity:</span> {item.price} x {item.quantity}</h3>
+                            <h3><span className='font-semibold'>Subtotal:</span> ₹{item.price * item.quantity}</h3>
+                            <button className='rounded-full text-white text-sm my-1 py-1 px-3 bg-red-700' onClick={()=>removeFromCart(item.name)}>Remove</button>
+                        </div>
+                        ))
+                    }
+                    </div>
+                    <button className='font-semibold my-2 py-2 bg-[#f3ecca] w-full' onClick={() => {}}>Cart Total: ₹{cartValue}/-</button>
+                </div>
+                )
+            }
+            </div>
+            <div id="checkout" style={{ fontFamily: 'Montserrat' }} className='w-[50%] m-4 flex flex-col justify-center '>
+                <h1>Check Out • Add Details</h1>
+                <form onSubmit={handleSubmit}>
+                    <div id="form-container" className='w-full'>
+                        
+                        <div>
+                            <input className='border my-1 p-1 w-full' placeholder="Enter Reciever's name" required type="text" name="name" value={address.name} onChange={handleInputChange} />
+                        </div>
+                        <div>
+                            <input className='border my-1 p-1 w-full' placeholder='Enter email' required type="email" name="email" value={address.email} onChange={handleInputChange} />
+                        </div>
+                        <div>
+                            <input className='border my-1 p-1 w-full' placeholder='Enter Phone no.' required type="number" name="phone" value={address.phone} onChange={handleInputChange} />
+                        </div>
+                        <div>
+                            <textarea className='border my-1 p-1 w-full' placeholder='Address Line 1' required type="text" name="line1" value={address.line1} onChange={handleInputChange} />
+                        </div>
+                        <div>
+                            <input className='border my-1 p-1 w-full' placeholder='Enter pincode' required type="number" name="pincode" value={address.pincode} onChange={handleInputChange} />
+                        </div>
+                    </div>
+                    <button type="submit" className='bg-[#f9f6e5] py-2 px-3 w-full flex justify-center' >Proceed to Pay <MdPayment className='pt-1' size={20}/></button>
+                </form>
+            </div>
         </div>
     </>
   )

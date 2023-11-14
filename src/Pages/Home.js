@@ -3,6 +3,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import Card from '../Components/Card'
 import OpulxContext from '../context/OpulxContext'
 
+import banner_home from "../Assets/banner_home.png"
+import banner2 from "../Assets/banner2.png"
+
 // icons
 import { IoMdArrowDropright } from "react-icons/io"
 import { CiFilter } from "react-icons/ci"
@@ -17,6 +20,10 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import LinearProgress from '@mui/material/LinearProgress';
 
+// carousel
+import Carousel from 'react-material-ui-carousel'
+import { Paper, Button } from '@mui/material'
+
 import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
@@ -26,9 +33,8 @@ const Home = () => {
   const navigate = useNavigate()
   const [prodHome, setProdHome] = useState([])
   const [categories, setCategories] = useState([])
-
   const [showfilters, setShowFilters] = useState(false)
-
+  const [carousel, setCarousel] = useState([])
   // dropdown selection
   const [filterCategory, setFilterCategory] = useState()
   // loading
@@ -74,11 +80,31 @@ const Home = () => {
     }
   }
 
+  const [banner, setBanner] = useState()
+  const fetchBanners = async() => {
+    try {
+      setLoading(true)
+      const response = await axios.get(`${API_URL}/api/banner/getbanner_home`)
+      console.log("banner:",response.data?.banners[0])
+      setCarousel(response.data?.banners)
+      if(carousel.length > 1){
+
+      }else{
+        if(carousel.length > 4)
+          setBanner(response.data?.banners[2].imageUrl)
+      }
+      setLoading(false)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 
 
   useEffect(() => {
     fetchProductsForHome()
     fetchCategories()
+    fetchBanners()
   }, [])
   
   useEffect(() => {
@@ -90,16 +116,38 @@ const Home = () => {
     <>
         <div id="home-container" className='m-4'>
 
-          <div id="filters" className='flex' onClick={() => setShowFilters(!showfilters)}>
-            <h2 className='text-lg'>Filters </h2>
-            <CiFilter className='pt-1' size={25}/>
+        <div id="homebanner" className='mb-5 h-[70vh] bg-blue-300'>
+          
+              {
+                  (carousel.length > 0) ? (
+                    <Carousel className='h-full' > 
+                      {
+                        carousel.map((item, i) => (
+                          <Paper>
+                              <img className='h-full w-full object-cover' key={i} src={item.imageUrl} alt="" />
+                          </Paper>
+                        ))
+                      }                    
+                    </Carousel>
+                  ) : (
+                    <img className='h-full w-full object-cover' src={banner} alt="" /> 
+                  )
+              }
+        </div>
+
+
+          <div id="filters" className='flex'>
+            <div id="filters" className='flex cursor-pointer' onClick={() => setShowFilters(!showfilters)}>
+              <h2 className='text-lg'>Filters </h2>
+              <CiFilter className='pt-1' size={25}/>
+            </div>
           </div>
 
           {/* Filters */}
           {
             showfilters ? (
               <div id="filter-container" className='p-2 py-4'>
-                <span className='rounded-md my-2 px-3 py-2 bg-red-500 text-white ' onClick={() => {fetchProductsForHome(); setFilterCategory(""); setShowFilters(!showfilters)}}>Reset Filters</span>
+                <button className='rounded-md my-2 px-3 py-1 bg-red-500 text-white ' onClick={() => {fetchProductsForHome(); setFilterCategory(""); setShowFilters(!showfilters)}}>Reset Filters</button>
 
                 <div id="filter-by-category" className='my-8'>
                   <p className='text-green-800'>*Select your desired category</p>
@@ -124,7 +172,7 @@ const Home = () => {
             ) : ("")
           }
 
-
+          
           {
             loading ? (
               <Stack sx={{ width: '100%', color: 'grey.500' }} spacing={2}>
@@ -160,6 +208,22 @@ const Home = () => {
                 }
               </div>
             </div>
+
+            {
+                  // (carousel.length > 0) ? (
+                  //   <Carousel className='h-full' > 
+                  //     {
+                  //       carousel.map((item, i) => (
+                  //         <Paper>
+                  //             <img className='h-full w-full object-cover' key={i} src={item.imageUrl} alt="" />
+                  //         </Paper>
+                  //       ))
+                  //     }                    
+                  //   </Carousel>
+                  // ) : (
+                    <img className='h-full w-full object-cover' src={banner} alt="" /> 
+                  // )
+              }
         </div>
     </>
   )

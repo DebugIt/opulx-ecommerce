@@ -17,9 +17,9 @@ const Card = ({ pname, imgUrl, desc, price, slug }) => {
             <div id='prod name' className='font-semibold'>
                 {pname}
             </div>
-            <div id="description" className='text-xs w-full h-[3vh] overflow-hidden'>
+            {/* <div id="description" className='text-xs w-full h-[3vh] overflow-hidden'>
                 {desc}
-            </div>
+            </div> */}
             <div id="price">
                 ₹{price}/-
             </div>

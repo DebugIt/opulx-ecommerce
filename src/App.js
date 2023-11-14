@@ -61,6 +61,10 @@ function App() {
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
+  const [cartAlert, setCartAlert] = useState(false)
+  const [cartMessage, setCartMessage] = useState("")
+  
+
   const addToCart = (item, quantity) => {
     const newObj = {
       name: item.name,
@@ -71,13 +75,19 @@ function App() {
     const searchForDuplicate = cart.find((itemname) => itemname.name === item.name)
     if(searchForDuplicate){
       console.log("cannot add")
+      setCartAlert(!cartAlert)
+      setCartMessage("Product already in cart")
     }
     else{
       if(cart.length === 0){
         setCart([newObj]);
+        setCartAlert(!cartAlert)
+        setCartMessage("Product Added to Cart")
       }
       else{
         setCart([...cart, newObj])
+        setCartAlert(!cartAlert)
+        setCartMessage("Product Added to Cart")
       }
     }   
     
@@ -106,7 +116,7 @@ function App() {
     <OpulxContext.Provider 
     value={{ individualCategory, setIndividualCategory, individualProduct, setIndividualProduct, isLoggedIn, setIsLoggedIn, loginactivity, setLoginActivity,
     // cart stuff
-    cart, setCart,addToCart, removeFromCart, orderid, setOrderid
+    cart, setCart,addToCart, removeFromCart, orderid, setOrderid, cartMessage, setCartMessage, cartAlert, setCartAlert
     }}>
       <Router>
         <Navbar />

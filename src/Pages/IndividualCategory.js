@@ -36,6 +36,7 @@ const IndividualCategory = () => {
   return (
     <>
       <div id="category-container" className='m-4' style={{fontFamily: 'Montserrat'}}>
+        Banner
         <h2 className='font-semibold my-4 text-xl'>Results for {individualCategory}</h2>
           {
             loading ? (

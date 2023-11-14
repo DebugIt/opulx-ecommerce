@@ -67,8 +67,8 @@ const Navbar = () => {
           onKeyDown={toggleDrawer(anchor, false)}
         >
           <List className='flex justify-between '>
-            <p className='px-3 py-2 text-3xl  text-[#314114]' style={{fontFamily: 'Sacramento'}}>Opulx</p>
-            <p className='px-3 py-2 text-2xl  text-[#314114]' style={{fontFamily: 'Playfair Display'}}>O</p>
+            <p className='px-3 py-2 text-3xl cursor-pointer text-[#314114]' style={{fontFamily: 'Sacramento'}}>Opulx</p>
+            <p className='px-3 py-2 text-2xl cursor-pointer text-[#314114]' style={{fontFamily: 'Playfair Display'}}>O</p>
           </List>
           <Divider />
           
@@ -95,10 +95,10 @@ const Navbar = () => {
           <Divider />
 
           <List sx={{padding:2}} style={{fontFamily: 'Montserrat'}}>
-            <ListItem className='cursor-pointer' onClick={() => {navigate("/"); toggleDrawer('right', false);}}> Home </ListItem>
-            <ListItem className='cursor-pointer' onClick={() => {navigate("/cart")}}> Cart </ListItem>
-            <ListItem className='cursor-pointer' onClick={() => {navigate("/profile")}}> Profile </ListItem>
-            <ListItem className='cursor-pointer' onClick={() => {navigate("/yourorders")}}> Your Orders </ListItem>
+            <ListItem className='cursor-pointer hover:bg-[#f9f6e5] transition ease-in-out duration-200' onClick={() => {navigate("/"); toggleDrawer('right', false);}}> Home </ListItem>
+            <ListItem className='cursor-pointer hover:bg-[#f9f6e5] transition ease-in-out duration-200' onClick={() => {navigate("/cart")}}> Cart </ListItem>
+            <ListItem className='cursor-pointer hover:bg-[#f9f6e5] transition ease-in-out duration-200' onClick={() => {navigate("/profile")}}> Profile </ListItem>
+            <ListItem className='cursor-pointer hover:bg-[#f9f6e5] transition ease-in-out duration-200' onClick={() => {navigate("/yourorders")}}> Your Orders </ListItem>
           </List>
           <Divider />
 
@@ -147,10 +147,10 @@ const Navbar = () => {
         <div id="nav-container" className=' flex justify-between
         p-4 bg-[#f9f6e5] text-4xl text-[#314114] font-semibold
         ' style={{fontFamily: 'Sacramento'}} >
-            <p className='tracking-wider' onClick={() => navigate("/")}>
+            <p className='tracking-wider cursor-pointer' onClick={() => navigate("/")}>
                 Opulx
             </p>
-            <div id="menu-bar" className='p-1'>
+            <div id="menu-bar" className='p-1 cursor-pointer'>
                 <CiMenuFries  onClick={toggleDrawer("right", true)} size={25}/>
             </div>
         </div>

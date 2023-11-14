@@ -86,21 +86,24 @@ const IndividualOrder = () => {
             <span className='underline'>Order Status:</span> {orderdetails.status} <br/>
             <span className='underline'>Last updated:</span> {new Date(orderdetails.updatedAt).toLocaleDateString()} <br/>
             <span className='underline'>Order Total:</span> {orderdetails.totalPrice}/- <br/>
+            <span className='underline'>Payment Status:</span> {(orderdetails.paymentstatus?.paid === "Not Paid") ? (<span className='text-red-500'>Not Paid</span>) : (<span className='text-green-500'>Paid</span>)}<br/>
             <hr className='my-2 border border-dashed'/>
             Products:  <br/>
-            {
-              orderproducts.map((product) => (
-                <div className='flex my-2 shadow' key={product._id}>
-                   <div className='w-[30%]'>
-                    <img className='h-full' src={product.imageURLs} alt={product.name} /></div> 
-                   <div className='mx-1'>
-                    Name: {product.name} <br/> 
-                    Price: ₹{product.price} <br/> 
-                    Quantity: {product.quantity} <br/> 
-                   </div> 
-                </div>
-              ))
-            }
+            <div className='grid grid-cols-2 md:grid-cols-3'>
+              {
+                orderproducts.map((product) => (
+                  <div className='flex my-2 shadow' key={product._id}>
+                    <div className='w-[30%] h-[20vh] '>
+                      <img className='h-full' src={product.imageURLs} alt={product.name} /></div> 
+                    <div className='mx-1'>
+                      Name: {product.name} <br/> 
+                      Price: ₹{product.price} <br/> 
+                      Quantity: {product.quantity} <br/> 
+                    </div> 
+                  </div>
+                ))
+              }
+            </div>
           </div>
         </div>
       </div>
