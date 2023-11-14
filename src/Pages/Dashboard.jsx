@@ -13,12 +13,14 @@ import { GrUserAdmin } from "react-icons/gr"
 import { BiCategory } from "react-icons/bi"
 import { LiaProductHunt } from "react-icons/lia"
 import { BsBoxes } from "react-icons/bs"
+import { GiTargetPoster } from "react-icons/gi"
 
 // component imports
 import VerifyAdmin from "../Components/VerifyAdmin"
 import CategoryController from "../Components/CategoryController"
 import OrderController from "../Components/OrderController"
 import ProductController from "../Components/ProductController"
+import BannerController from '../Components/BannerController';
 
 
 const Dashboard = () => {
@@ -35,6 +37,7 @@ const Dashboard = () => {
     const [category, setCategory] = useState(false)
     const [product, setProduct] = useState(false)
     const [order, setOrder] = useState(false)
+    const [banners, setBanners] = useState(false)
 
     // specials
     const [storecat, setStoreCat] = useState([{name: "lol"}])
@@ -49,9 +52,11 @@ const Dashboard = () => {
     // create product && upload image ✅
     // delete product ✅
     // update product ✅
-    // get all orders
-    // fetch pending, deliviered, and cancelled orders
-    // change order status - only admin
+    // get all orders ✅
+    // fetch pending, deliviered, and cancelled orders ✅
+    // change order status - only admin ✅
+    // Banners : create and fetch
+
 
     // UPCOMING
     // total sales
@@ -103,10 +108,11 @@ const Dashboard = () => {
                 <div id="sidebar" className='p-3 w-[25%] grid place-items-center '>
                     <div className='p-10 px-16 grid place-items-center border-r-2 border-b-2 border-black'>
                         <ul>
-                            <li className={`my-2 hover:underline flex cursor-pointer ${verify ? ("underline") : ("")}`} onClick={() => {setVerify(true); setCategory(false); setProduct(false); setOrder(false);}}><GrUserAdmin className='mx-1'  size={20}/> Verify Admin</li>
-                            <li className={`my-2 hover:underline flex cursor-pointer ${category ? ("underline") : ("")}`} onClick={() => {setVerify(false); setCategory(true); setProduct(false); setOrder(false);}}><BiCategory className='mx-1' size={20}/> Category Controls</li>
-                            <li className={`my-2 hover:underline flex cursor-pointer ${product ? ("underline") : ("")}`} onClick={() => {setVerify(false); setCategory(false); setProduct(true); setOrder(false);}}><LiaProductHunt className='mx-1' size={20}/> Product Controls</li>
-                            <li className={`my-2 hover:underline flex cursor-pointer ${order ? ("underline") : ("")}`} onClick={() => {setVerify(false); setCategory(false); setProduct(false); setOrder(true);}}><BsBoxes className='mx-1' size={20}/> Order Controls</li>
+                            <li className={`my-2 hover:underline flex cursor-pointer ${verify ? ("underline") : ("")}`} onClick={() => {setVerify(true); setCategory(false); setProduct(false); setOrder(false); setBanners(false)}}><GrUserAdmin className='mx-1'  size={20}/> Verify Admin</li>
+                            <li className={`my-2 hover:underline flex cursor-pointer ${category ? ("underline") : ("")}`} onClick={() => {setVerify(false); setCategory(true); setProduct(false); setOrder(false); setBanners(false)}}><BiCategory className='mx-1' size={20}/> Category Controls</li>
+                            <li className={`my-2 hover:underline flex cursor-pointer ${product ? ("underline") : ("")}`} onClick={() => {setVerify(false); setCategory(false); setProduct(true); setOrder(false); setBanners(false)}}><LiaProductHunt className='mx-1' size={20}/> Product Controls</li>
+                            <li className={`my-2 hover:underline flex cursor-pointer ${order ? ("underline") : ("")}`} onClick={() => {setVerify(false); setCategory(false); setProduct(false); setOrder(true); setBanners(false)}}><BsBoxes className='mx-1' size={20}/> Order Controls</li>
+                            <li className={`my-2 hover:underline flex cursor-pointer ${banners ? ("underline") : ("")}`} onClick={() => {setVerify(false); setCategory(false); setProduct(false); setOrder(false); setBanners(true)}}><GiTargetPoster className='mx-1' size={20}/> Banners Controls</li>
                             
                         </ul>
                     </div>
@@ -146,6 +152,10 @@ const Dashboard = () => {
                         ) : (order) ? (
                             <>
                                 <OrderController />
+                            </>
+                        ) : (banners) ? (
+                            <>
+                                <BannerController />
                             </>
                         ) : (
                             <VerifyAdmin />
