@@ -1,6 +1,6 @@
 const express = require("express");
 const isAuthenticated = require("../middlewares/isAuthenticated");
-const { create, verify_razorpay_order, create_razorpay_order, fetchindividualorder, getall, pending, delivered, cancelled, cancelorder, getParticularOrder } = require("../controllers/orderController");
+const { create, verify_razorpay_order, create_razorpay_order, fetchindividualorder, getall, pending, delivered, cancelled, cancelorder, getParticularOrder, updateorder } = require("../controllers/orderController");
 const isAdmin = require("../middlewares/isAdmin");
 const isEither = require("../middlewares/isEither");
 const dotenv = require("dotenv").config()
@@ -105,6 +105,30 @@ orderRouter.get("/fetch-individual-order/:id", isEither, async(req, res) => {
         })
     }
 })
+
+// update payments
+orderRouter.post("/updatepayment/:id", isEither, async(req, res) => {
+    let id = req.params.id;
+    let paid = req.body.paidstatus
+    let tid = req.body.tid
+    const response = await updateorder(id, paid, tid);
+    const { success, status, message } = response
+    if(status === 200){
+        return res.status(status).json({
+            status,
+            success,
+            message
+        })
+    }else{
+        return res.status(status).json({
+            status,
+            success,
+            message
+        })
+    }
+})
+
+
 
 // cancel order
 orderRouter.put("/cancel-order/:id", isEither, async(req, res) => {

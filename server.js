@@ -51,6 +51,7 @@ const adminRouter = require("./routes/admin");
 const categoryRouter = require("./routes/category");    
 const productRouter = require("./routes/product");
 const orderRouter = require("./routes/order")
+const bannerRouter = require("./routes/banner")
 
 
 app.use("/api/users", userRouter)
@@ -58,6 +59,7 @@ app.use("/api/admin", adminRouter)
 app.use("/api/category", categoryRouter)
 app.use("/api/product", productRouter)
 app.use("/api/order", orderRouter)
+app.use("/api/banner", bannerRouter)
 
 
 

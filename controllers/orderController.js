@@ -157,6 +157,37 @@ module.exports = {
         }
     },
 
+    updateorder: async ( orderid, paid, transactionID ) => {
+        try {
+            const findOrder = await Order.findById(orderid)
+            if(!findOrder){
+                return {
+                    status:404,
+                    success:false,
+                    message:"No Order Found"
+                }
+            }else{
+                findOrder.paymentstatus = {
+                    paid,
+                    transactionID,
+                }
+                await findOrder.save()
+                return {
+                    status:200,
+                    success: true,
+                    message: "Payment Updated Successfully!"
+                }
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                status: 500,
+                sucess: false,
+                message: error.message || 'Internal Server Error'
+            }
+        }
+    },
+
     getall: async () => {
         try {
             const getAllOrders = await Order.find().populate('user');
