@@ -8,7 +8,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 // snackbars
 import Snackbar from '@mui/material/Snackbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Card from '../Components/Card';
 
 import banner_home from "../Assets/banner_home.png"
@@ -16,8 +16,10 @@ import banner2 from "../Assets/banner2.png"
 
 
 const IndividualProduct = () => {
+  let { product_slug } = useParams()
+
   const API_URL = process.env.REACT_APP_BASE_URL
-  const { individualProduct, setIndividualProduct, isLoggedIn, setIsLoggedIn, addToCart, cartMessage, setCartMessage, cartAlert, setCartAlert } = useContext(OpulxContext)
+  const { cart, setCart, individualProduct, setIndividualProduct, isLoggedIn, setIsLoggedIn, addToCart, cartMessage, setCartMessage, cartAlert, setCartAlert } = useContext(OpulxContext)
 
   const navigate = useNavigate()
 
@@ -31,13 +33,20 @@ const IndividualProduct = () => {
 
   // 
   const [quantity, setQuantity] = useState(0)
+  const [isIn, setisIn] = useState(false)
+
 
 
   const fetchProduct = async() => {
     try {
       setLoading(true)
-      const response = await axios.get(`${API_URL}/api/product/get-product/${individualProduct}`)
-      console.log(response.data?.product)
+      const response = await axios.get(`${API_URL}/api/product/get-product/${product_slug}`)
+      console.log(response.data?.product?.name)
+
+      const isInCart = cart.some((item) => item.name === response.data?.product?.name);
+      setisIn(isInCart)
+      console.log("res:" ,isIn)
+
       setProductDetails(response.data?.product)
       setLoading(false)
     } catch (error) {
@@ -63,6 +72,7 @@ const IndividualProduct = () => {
   
 
   useEffect(() => {
+    setIndividualProduct(product_slug)
     fetchProduct()
     fetchProductsForHome()
   }, [])
@@ -132,7 +142,7 @@ const IndividualProduct = () => {
               <button onClick={() => {(quantity > 1) ? (setQuantity(quantity-1)) : (setQuantity(0))}}>-</button>
             </div>
             <div className='grid place-items-center my-2'>
-              <button className={`font-semibold my-1 py-2 w-full bg-[#f9f6e5] hover:bg-[#dad1a1] transition ease-in-out duration-500 `} disabled={(quantity <= 0) ? true : false} onClick={() => {addToCart(productDetails, quantity)}}>Add to Cart</button>
+              <button className={`font-semibold my-1 py-2 w-full bg-[#f9f6e5] hover:bg-[#dad1a1] transition ease-in-out duration-500 ${isIn ? "cursor-not-allowed" : ""}`} disabled={(quantity <= 0) ? true : false} onClick={() => {addToCart(productDetails, quantity)}}>{isIn ? "Already added to Cart" : "Add to Cart"}</button>
               {
                 isLoggedIn ? (
                 <button className={`font-semibold my-1 py-2 w-full bg-[#f9f6e5] hover:bg-[#dad1a1] transition ease-in-out duration-500`} onClick={() => {navigate('/cart')}}>BuyNow</button>

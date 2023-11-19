@@ -3,7 +3,7 @@ import OpulxContext from '../context/OpulxContext'
 import axios from 'axios'
 
 import { IoIosArrowBack } from "react-icons/io"
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 // progress
 import Stack from '@mui/material/Stack';
@@ -13,6 +13,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Snackbar from '@mui/material/Snackbar';
 
 const IndividualOrder = () => {
+  let { product_slug } = useParams()
+
   const API_URL = process.env.REACT_APP_BASE_URL
   const { orderid, setOrderid } = useContext(OpulxContext)
   const navigate = useNavigate()
@@ -87,9 +89,10 @@ const IndividualOrder = () => {
             <span className='underline'>Last updated:</span> {new Date(orderdetails.updatedAt).toLocaleDateString()} <br/>
             <span className='underline'>Order Total:</span> {orderdetails.totalPrice}/- <br/>
             <span className='underline'>Payment Status:</span> {(orderdetails.paymentstatus?.paid === "Not Paid") ? (<span className='text-red-500'>Not Paid</span>) : (<span className='text-green-500'>Paid</span>)}<br/>
+            <span className='underline'>Transaction Id:</span>{orderdetails.paymentstatus?.transactionID}<br/>
             <hr className='my-2 border border-dashed'/>
             Products:  <br/>
-            <div className='grid grid-cols-2 md:grid-cols-3'>
+            <div className='grid grid-cols-1 md:grid-cols-3'>
               {
                 orderproducts.map((product) => (
                   <div className='flex my-2 shadow' key={product._id}>

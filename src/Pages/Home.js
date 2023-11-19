@@ -116,7 +116,7 @@ const Home = () => {
     <>
         <div id="home-container" className='m-4'>
 
-        <div id="homebanner" className='mb-5 h-[70vh] bg-blue-300'>
+        <div id="homebanner" className='mb-5 md:h-[70vh] '>
           
               {
                   (carousel.length > 0) ? (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route, useParams } from "react-router-dom"
 import OpulxContext from "./context/OpulxContext";
 import Home from "./Pages/Home";
 import Navbar from "./Components/common/Navbar";
@@ -33,7 +33,7 @@ function App() {
   // for passing the product id to gain product info
   const [individualProductId, setIndividualProductId] = useState()
 
-
+  
 
   useEffect(() => {
     const getStat = localStorage.getItem("userlogstatus-opulx")
@@ -77,12 +77,14 @@ function App() {
       console.log("cannot add")
       setCartAlert(!cartAlert)
       setCartMessage("Product already in cart")
+      
     }
     else{
       if(cart.length === 0){
         setCart([newObj]);
         setCartAlert(!cartAlert)
         setCartMessage("Product Added to Cart")
+        
       }
       else{
         setCart([...cart, newObj])
